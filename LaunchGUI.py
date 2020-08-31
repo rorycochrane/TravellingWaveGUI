@@ -149,26 +149,70 @@ class CustomPage(tk.Frame):
         graph_button = tk.Button(self, text="View Graph",
                             command = lambda: controller.show_frame(GraphPage))
         graph_button.pack()
-        
-        
+
+        tkvar = tk.IntVar()
+
+        tkvar.set(active_traps[0]) # set the default option
+
+        popupMenu = tk.OptionMenu(self, tkvar, *active_traps)
+        tk.Label(self, text="Choose a trap").pack()
+        popupMenu.pack()
+
+        # on change dropdown value
+        def change_dropdown(*args):
+            chosen_trap = tkvar.get()
+            chosen_index = active_traps.index(chosen_trap)
+
+        # link function to change dropdown
+        tkvar.trace('w', change_dropdown)
+
         # LIST BOX
         
-#             listbox = Listbox(master)
-#             listbox.pack()
+        listbox = tk.Listbox(self, selectmode=tk.MULTIPLE)
+        tk.Label(self, text="Choose a trap").pack()
+        listbox.pack()
 
-#             listbox.insert(END, "a list entry")
+        for x,item in enumerate(active_traps):
+            listbox.insert(x, item)
 
-#             for item in ["one", "two", "three", "four"]:
-#                 listbox.insert(END, item)
-        
-#             tkvar = tk.IntVar()
 
-#             tkvar.set(active_traps[0]) # set the default option
-        
-#             listbox = tk.Listbox(self)
-#             tk.Label(self, text="Choose a trap").pack()
-#             listbox.pack()
+        #PLOT GRAPH
+        def plot_graph():
+            selected = listbox.curselection()
+            selected_traps = [active_traps[x] for x in selected]
+            selected_starts = [starts[x] for x in selected]
+            selected_ends = [ends[x] for x in selected]
+            f = Figure(figsize=(5,5))#, dpi=100)
+            a = f.add_subplot(111)
+            for start, end in zip(selected_starts, selected_ends):
+                mod_start, mod_end = 0, end -start
+                a.scatter(current['Time (s)'].to_list()[mod_start:mod_end], current['Current (A)'].to_list()[start:end])
+            #a.scatter(current['Time (s)'].to_list()[start:end], current['Current (A)'].to_list()[start:end])
 
-#             for x,item in enumerate(active_traps):
-#                 listbox.insert(x, item)
+            def clear_graph():
+                canvas._tkcanvas.pack_forget()
+                canvas.get_tk_widget().pack_forget()
+                toolbar.pack_forget()
+                b.pack_forget()
+
+            b = tk.Button(self, text="Delete me", command=clear_graph)
+            b.pack()
+
+            canvas = FigureCanvasTkAgg(f, self)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+            toolbar = NavigationToolbar2Tk(canvas, self)
+            toolbar.update()
+            canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
             
+
+        plot_button = tk.Button(self, text="Plot Graph", command = plot_graph)
+        plot_button.pack()
+
+        # b = tk.Button(self, text="Delete me", command=lambda: b.pack_forget())
+        # b.pack()
+
+        
+        
