@@ -7,6 +7,7 @@ from matplotlib.figure import Figure
 LARGE_FONT = ("Verdana", 12)
     
 class Tonyapp(tk.Tk):
+
     def __init__(self, active_traps, maxima, pulse_widths, current, voltage, starts, ends, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         container = tk.Frame(self)
@@ -30,8 +31,6 @@ class Tonyapp(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-#     def qf(param):
-#         print(param)
 
 class StartPage(tk.Frame):
 
@@ -40,30 +39,14 @@ class StartPage(tk.Frame):
         label = tk.Label(self, text='Start Page', font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-        graph_button = tk.Button(self, text="Visit Graph Page", 
+        # NAVIGATION BUTTONS
+        graph_button = tk.Button(self, text="Compare All Pulses", 
                             command = lambda: controller.show_frame(GraphPage))
         graph_button.pack()
         
-        custom_button = tk.Button(self, text="Choose Pulses to Compare",
+        custom_button = tk.Button(self, text="Compare Select Pulses",
                                     command = lambda: controller.show_frame(CustomPage))
         custom_button.pack()
-
-#         tkvar = tk.IntVar()
-
-#         tkvar.set(active_traps[0]) # set the default option
-
-# #             popupMenu = tk.OptionMenu(self, tkvar, *active_traps)
-# #             tk.Label(self, text="Choose a trap").pack()
-# #             popupMenu.pack()
-
-#         # on change dropdown value
-#         def change_dropdown(*args):
-#             chosen_trap = tkvar.get()
-#             chosen_index = active_traps.index(chosen_trap)
-
-#         # link function to change dropdown
-#         tkvar.trace('w', change_dropdown)
-
 
         f = Figure(figsize=(10,6))#, dpi=100)
         gs = f.add_gridspec(3, 2)
@@ -88,6 +71,7 @@ class StartPage(tk.Frame):
         c.set_xlabel('Time (us)')
         c.set_ylabel('Current (A)')
         
+        
         d = f.add_subplot(gs[2,:])
         d.scatter(voltage['Time (s)'].apply(lambda x: x*1000*1000).to_list(),voltage['Voltage (V)'].to_list())
         d.set_title('Voltage vs Time')
@@ -111,11 +95,12 @@ class GraphPage(tk.Frame):
         label = tk.Label(self, text='Graph Page', font=LARGE_FONT)
         label.pack(pady=10, padx=10)
 
+        # NAVIGATION BUTTONS
         home_button = tk.Button(self, text="Back to Home", 
                             command = lambda: controller.show_frame(StartPage))
         home_button.pack()
         
-        custom_button = tk.Button(self, text="Choose Pulses to Compare", 
+        custom_button = tk.Button(self, text="Compare Select Pulses", 
                                     command = lambda: controller.show_frame(CustomPage))
         custom_button.pack()
 
@@ -146,35 +131,17 @@ class CustomPage(tk.Frame):
                             command = lambda: controller.show_frame(StartPage))
         home_button.pack()
         
-        graph_button = tk.Button(self, text="View Graph",
+        graph_button = tk.Button(self, text="Compare All Pulses",
                             command = lambda: controller.show_frame(GraphPage))
         graph_button.pack()
 
-        tkvar = tk.IntVar()
-
-        tkvar.set(active_traps[0]) # set the default option
-
-        popupMenu = tk.OptionMenu(self, tkvar, *active_traps)
-        tk.Label(self, text="Choose a trap").pack()
-        popupMenu.pack()
-
-        # on change dropdown value
-        def change_dropdown(*args):
-            chosen_trap = tkvar.get()
-            chosen_index = active_traps.index(chosen_trap)
-
-        # link function to change dropdown
-        tkvar.trace('w', change_dropdown)
-
         # LIST BOX
-        
         listbox = tk.Listbox(self, selectmode=tk.MULTIPLE)
         tk.Label(self, text="Choose a trap").pack()
         listbox.pack()
 
         for x,item in enumerate(active_traps):
             listbox.insert(x, item)
-
 
         #PLOT GRAPH
         def plot_graph():
@@ -187,6 +154,7 @@ class CustomPage(tk.Frame):
             for start, end in zip(selected_starts, selected_ends):
                 mod_start, mod_end = 0, end -start
                 a.scatter(current['Time (s)'].to_list()[mod_start:mod_end], current['Current (A)'].to_list()[start:end])
+            a.legend(selected_traps)
             #a.scatter(current['Time (s)'].to_list()[start:end], current['Current (A)'].to_list()[start:end])
 
             def clear_graph():
@@ -195,7 +163,7 @@ class CustomPage(tk.Frame):
                 toolbar.pack_forget()
                 b.pack_forget()
 
-            b = tk.Button(self, text="Delete me", command=clear_graph)
+            b = tk.Button(self, text="Clear Graph", command=clear_graph)
             b.pack()
 
             canvas = FigureCanvasTkAgg(f, self)
@@ -206,13 +174,9 @@ class CustomPage(tk.Frame):
             toolbar.update()
             canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-            
-
         plot_button = tk.Button(self, text="Plot Graph", command = plot_graph)
         plot_button.pack()
 
-        # b = tk.Button(self, text="Delete me", command=lambda: b.pack_forget())
-        # b.pack()
 
         
         

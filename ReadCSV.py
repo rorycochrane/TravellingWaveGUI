@@ -2,8 +2,8 @@ import pandas as pd
 
 def read_settings(settings_file):
     tw_settings = pd.read_csv(settings_file)
-    tw_settings.columns = tw_settings.iloc[3]
-    tw_settings = tw_settings[4:]
+    tw_settings.columns = tw_settings.iloc[0]
+    tw_settings = tw_settings[1:]
     tw_settings[':Trap #'] = tw_settings[':Trap #'].apply(lambda x: x.strip(':')).astype('int')
     tw_settings['Discharge Instant'] = tw_settings['Discharge Instant'].astype('float')/1000/1000
     tw_settings['Pulse Width'] = tw_settings['Pulse Width'].astype('float')/1000/1000

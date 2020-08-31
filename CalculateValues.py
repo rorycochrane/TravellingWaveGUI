@@ -9,15 +9,12 @@ def calculate_values(TB, tw_settings, current, voltage):
     # current_range = [current['Time (s)'].iloc[0],current['Time (s)'].iloc[-1]]
     # in_range = [1 if x < current_range[1] and x> current_range[0] else 0 for x in discharge_times]
 
-    print(tw_settings.head())
 
     all_active_traps = tw_settings[tw_settings['Enabled?']=='X'][':Trap #'].to_list()
-    print(all_active_traps)
     all_discharge_times = tw_settings[tw_settings['Enabled?']=='X']['Discharge Instant'].to_list()
     all_pulse_widths = tw_settings[tw_settings['Enabled?']=='X']['Pulse Width'].to_list()
     
     active_traps = [x for x in all_active_traps if x%16==TB]
-    print(active_traps)
     discharge_times = [y for x,y in zip(all_active_traps, all_discharge_times) if x%16==TB]
     pulse_widths = [y for x,y in zip(all_active_traps, all_pulse_widths) if x%16==TB]
 
