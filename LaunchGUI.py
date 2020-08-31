@@ -111,6 +111,10 @@ class GraphPage(tk.Frame):
             a.scatter(current['Time (s)'].to_list()[mod_start:mod_end], current['Current (A)'].to_list()[start:end])
         #a.scatter(current['Time (s)'].to_list()[start:end], current['Current (A)'].to_list()[start:end])
 
+        a.set_title('Current vs Time')
+        a.set_xlabel('Time (s)')
+        a.set_ylabel('Current (A)')
+
         canvas = FigureCanvasTkAgg(f, self)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -149,12 +153,15 @@ class CustomPage(tk.Frame):
             selected_traps = [active_traps[x] for x in selected]
             selected_starts = [starts[x] for x in selected]
             selected_ends = [ends[x] for x in selected]
-            f = Figure(figsize=(5,5))#, dpi=100)
+            f = Figure(figsize=(3,3))#, dpi=100)
             a = f.add_subplot(111)
             for start, end in zip(selected_starts, selected_ends):
                 mod_start, mod_end = 0, end -start
                 a.scatter(current['Time (s)'].to_list()[mod_start:mod_end], current['Current (A)'].to_list()[start:end])
             a.legend(selected_traps)
+            a.set_xlabel('Time (s)')
+            a.set_ylabel('Current (A)')
+            f.tight_layout()
             #a.scatter(current['Time (s)'].to_list()[start:end], current['Current (A)'].to_list()[start:end])
 
             def clear_graph():
